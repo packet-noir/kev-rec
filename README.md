@@ -4,8 +4,8 @@ Retrieves catalog data from CISA's Known Exploited Vulnerability (KEV) database
 and print CVEs added in the last N days.
 
 By default, kev-rec.py lists CVEs added in the last 30 days. 
-Configure this by modifying the value of the `DAYS_BACK` constant 
-inside the script. 
+Configure this by modifying the value of the `days_back` variable
+within main(). 
 
 ## Dependencies
 
