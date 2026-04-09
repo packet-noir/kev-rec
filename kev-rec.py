@@ -3,6 +3,7 @@ import sys
 from datetime import datetime, timedelta
 import time
 
+# Retrieve CISA KEV Catalog and Return JSON
 def fetch_kev():
     data_source = requests.get("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
     if data_source.status_code != 200:
@@ -10,9 +11,11 @@ def fetch_kev():
         sys.exit(1)
     return data_source.json()['vulnerabilities']
 
+# Calculate Target Date and Return datetime Object
 def cutoff_date(days_back):
     return (datetime.now() - timedelta(days=days_back)).date()
 
+# Filter by CVEs Added to KEV On and After Target Date and Return List of CVEs
 def filter_catalog(catalog, target_date):
     recent_cve = []
     for vuln in catalog:
@@ -21,9 +24,11 @@ def filter_catalog(catalog, target_date):
             recent_cve.append(vuln)
     return recent_cve
 
+# Return Formatted String
 def format_cve(cve, score, severity):
     return f"{cve['cveID']} added on {cve['dateAdded']} - {severity} ({score})\n{cve['vulnerabilityName']}\n"
 
+# Fetch CVSS Score from NVD Database
 def fetch_cvss(cve_id):
     source = requests.get(f"https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}")
     if source.status_code != 200:
@@ -41,6 +46,7 @@ def fetch_cvss(cve_id):
     
     return metrics[0].get('cvssData', {}).get('baseScore')
 
+# Map CVSS Score to Severity Label
 def cvss_severity(score):
     if score is None:
         return "Severity unavailable"
@@ -54,7 +60,7 @@ def cvss_severity(score):
         return "Low"
     else:
         return "None"
-    
+
 def main():
     days_back = 30
     catalog = fetch_kev()
@@ -65,6 +71,6 @@ def main():
         score = fetch_cvss(item['cveID'])
         severity = cvss_severity(score)
         print(format_cve(item, score, severity))
-        time.sleep(6)
+        time.sleep(6) # Managing Rate Limit
 
 main()
