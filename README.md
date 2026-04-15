@@ -15,7 +15,7 @@ within main().
 ## Usage
 
 ```bash
-python3 kev-rec.py
+python kev-rec.py
 ```
 
 ## Sample Output
